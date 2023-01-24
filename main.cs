@@ -38,8 +38,6 @@ namespace metin
         public Form1()
         {
             InitializeComponent();
-            //execute();
-            timer1.Start();
         }
 
         private static Process target = null;
@@ -72,8 +70,8 @@ namespace metin
             SwitchToThisWindow(edit, true);
             SetForegroundWindow(edit);
 
-            Button button = new Button();
-            button.PressKey(Button.BT7.KEY_Z);
+            BOT button = new BOT();
+            button.PressKey(BOT.BT7.KEY_Z);
             Thread.Sleep(50);
             
         }
@@ -91,34 +89,34 @@ namespace metin
 
 
 
-        public class Button
+        public class BOT
         {
-            public void PressKey(Button.BT7 btn)
+            public void PressKey(BOT.BT7 btn)
             {
-                Button.Input[] inputs = new Button.Input[4];
-                Button.Input input = new Button.Input();
+                BOT.Input[] inputs = new BOT.Input[4];
+                BOT.Input input = new BOT.Input();
                 input.type = 1U;
-                input.i_union.keyboardinput.wVk = (Button.BT6)0;
+                input.i_union.keyboardinput.wVk = (BOT.BT6)0;
                 input.i_union.keyboardinput.time = 0;
                 input.i_union.keyboardinput.dwExtraInfo = (UIntPtr)0UL;
-                input.i_union.keyboardinput.dwFlags = Button.BT5.SCANCODE;
+                input.i_union.keyboardinput.dwFlags = BOT.BT5.SCANCODE;
                 input.i_union.keyboardinput.wScan = btn;
                 inputs[0] = input;
 
-                int num1 = (int)Button.SendInput(1U, inputs, Button.Input.Size);
+                int num1 = (int)BOT.SendInput(1U, inputs, BOT.Input.Size);
                 Thread.Sleep(50);
 
-                input.i_union.keyboardinput.dwFlags = Button.BT5.KEYUP;
+                input.i_union.keyboardinput.dwFlags = BOT.BT5.KEYUP;
                 inputs[0] = input;
 
-                int num2 = (int)Button.SendInput(1U, inputs, Button.Input.Size);
+                int num2 = (int)BOT.SendInput(1U, inputs, BOT.Input.Size);
                 Console.WriteLine(num2);
             }
 
       
 
             [DllImport("user32.dll")]
-            internal static extern uint SendInput(uint nInputs, [MarshalAs(UnmanagedType.LPArray), In] Button.Input[] inputs, int size);
+            internal static extern uint SendInput(uint nInputs, [MarshalAs(UnmanagedType.LPArray), In] BOT.Input[] inputs, int size);
 
             private enum GAME_KEY : short
             {
@@ -128,37 +126,37 @@ namespace metin
             public struct Input
             {
                 public uint type;
-                public Button.InputUnion i_union;
+                public BOT.InputUnion i_union;
 
-                public static int Size => Marshal.SizeOf(typeof(Button.Input));
+                public static int Size => Marshal.SizeOf(typeof(BOT.Input));
             }
 
             [StructLayout(LayoutKind.Explicit)]
             public struct InputUnion
             {
                 [FieldOffset(0)]
-                internal Button.MouseInput mouseinput;
+                internal BOT.MouseInput mouseinput;
                 [FieldOffset(0)]
-                internal Button.KeyboardInput keyboardinput;
+                internal BOT.KeyboardInput keyboardinput;
                 [FieldOffset(0)]
-                internal Button.HardwareInput hardwareinput;
+                internal BOT.HardwareInput hardwareinput;
             }
 
             public struct MouseInput
             {
                 internal int int_0;
                 internal int int_1;
-                internal Button.BT3 btn3_0;
-                internal Button.BT4 btn4_0;
+                internal BOT.BT3 btn3_0;
+                internal BOT.BT4 btn4_0;
                 internal uint uint_0;
                 internal UIntPtr uintptr_0;
             }
 
             public struct KeyboardInput
             {
-                internal Button.BT6 wVk;
-                internal Button.BT7 wScan;
-                internal Button.BT5 dwFlags;
+                internal BOT.BT6 wVk;
+                internal BOT.BT7 wScan;
+                internal BOT.BT5 dwFlags;
                 internal int time;
                 internal UIntPtr dwExtraInfo;
             }
@@ -566,5 +564,42 @@ namespace metin
             }
         }
 
+        public static String buttonInitText = null;
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Button xd = button1;
+            
+            if (xd.Text != "stop")
+            {
+                Console.WriteLine("aha?");
+
+                if (buttonInitText == null)
+                {
+                    buttonInitText = xd.Text;
+                }
+
+                if (!checkBox1.Checked)
+                {
+                    return;
+                }
+
+                xd.Text = "stop";
+                timer1.Start();
+
+                checkBox1.Checked = false;
+            }
+            else
+            {
+                Console.WriteLine("e?");
+                xd.Text = buttonInitText;
+                timer1.Dispose();
+            }
+
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
