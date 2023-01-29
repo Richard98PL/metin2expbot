@@ -10,16 +10,26 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WindowsInput.Native;
-using WindowsInput;
+
 using System;
 using System.Threading;
+using System.Drawing.Imaging;
+using IronOcr;
+using System.Text.RegularExpressions;
 
 namespace metin
 {
     public partial class Form1 : Form
     {
+        private static readonly Regex sWhitespace = new Regex(@"\s+");
+        public static string ReplaceWhitespace(string input, string replacement)
+        {
+            return sWhitespace.Replace(input, replacement);
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
 
+        }
 
         [DllImport("user32.dll")]
         public static extern IntPtr PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
@@ -70,10 +80,105 @@ namespace metin
             SwitchToThisWindow(edit, true);
             SetForegroundWindow(edit);
 
+            Bitmap captureBitmap = null;
+            try
+            {
+               
+                captureBitmap = new Bitmap(70, 40, PixelFormat.Format32bppArgb);
+
+                Rectangle captureRectangle = new Rectangle(208, 679, 70, 40);
+              
+                Graphics captureGraphics = Graphics.FromImage(captureBitmap);
+               
+                captureGraphics.CopyFromScreen(captureRectangle.Left, captureRectangle.Top, 0, 0, captureRectangle.Size);
+              
+                //captureBitmap.Save("Capture.jpg", ImageFormat.Jpeg);
+
+                Console.WriteLine("image");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            Double hpPercent = 100;
+            var ocr = new IronTesseract();
+            ocr.Configuration.BlackListCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-.:;<=>?@[\\]^_`{|}~";
+            using (var input = new OcrInput(captureBitmap))
+            {
+                var result = ocr.Read(input);
+                String scan = (result.Text);
+                Console.WriteLine(scan);
+
+                if (scan.Count(x => x == '/') == 1)
+                {
+                    string[] substrings = scan.Split('/');
+                    int numberBeforeSlash = int.Parse(ReplaceWhitespace(substrings[0].Trim(), ""));
+                    int numberAfterSlash = int.Parse(ReplaceWhitespace(substrings[1].Trim(), ""));
+                    Console.WriteLine(numberBeforeSlash);
+                    Console.WriteLine(numberAfterSlash);
+                    label1.Text = "" + numberBeforeSlash + "/" + numberAfterSlash;
+                    double percentage = (double)numberBeforeSlash / numberAfterSlash * 100;
+                    hpPercent = percentage;
+                    Console.WriteLine(percentage);
+                }
+            }
+
+
             BOT button = new BOT();
             button.PressKey(BOT.BT7.KEY_Z);
-            Thread.Sleep(50);
-            
+            Thread.Sleep(25);
+
+            if(hpPercent < 80) button.PressKey(BOT.BT7.KEY_1);
+            Thread.Sleep(25);
+
+            button.PressKey(BOT.BT7.KEY_Z);
+            Thread.Sleep(25);
+
+
+            if (hpPercent < 80) button.PressKey(BOT.BT7.KEY_2);
+            Thread.Sleep(25);
+
+            button.PressKey(BOT.BT7.KEY_Z);
+            Thread.Sleep(25);
+
+
+            if (hpPercent < 80) button.PressKey(BOT.BT7.KEY_3);
+            Thread.Sleep(25);
+
+            button.PressKey(BOT.BT7.KEY_Z);
+            Thread.Sleep(25);
+
+
+            if (hpPercent < 80) button.PressKey(BOT.BT7.KEY_4);
+            Thread.Sleep(25);
+
+            button.PressKey(BOT.BT7.KEY_Z);
+            Thread.Sleep(25);
+
+            if (hpPercent < 80) button.PressKey(BOT.BT7.KEY_5);
+            Thread.Sleep(25);
+
+            button.PressKey(BOT.BT7.KEY_Z);
+            Thread.Sleep(25);
+
+            if (hpPercent < 80) button.PressKey(BOT.BT7.KEY_6);
+            Thread.Sleep(25);
+
+            button.PressKey(BOT.BT7.KEY_Z);
+            Thread.Sleep(25);
+
+            if (hpPercent < 80) button.PressKey(BOT.BT7.KEY_7);
+            Thread.Sleep(25);
+
+            button.PressKey(BOT.BT7.KEY_Z);
+            Thread.Sleep(25);
+
+            if (hpPercent < 80) button.PressKey(BOT.BT7.KEY_8);
+            Thread.Sleep(25);
+
+            button.PressKey(BOT.BT7.KEY_Z);
+            Thread.Sleep(25);
         }
 
         private static Int32 safetyCount = 0;
@@ -81,7 +186,7 @@ namespace metin
         {
             execute();
             safetyCount++;
-            if(safetyCount <  0)
+            if (safetyCount < 0)
             {
                 timer1.Dispose();
             }
@@ -110,10 +215,9 @@ namespace metin
                 inputs[0] = input;
 
                 int num2 = (int)BOT.SendInput(1U, inputs, BOT.Input.Size);
-                Console.WriteLine(num2);
             }
 
-      
+
 
             [DllImport("user32.dll")]
             internal static extern uint SendInput(uint nInputs, [MarshalAs(UnmanagedType.LPArray), In] BOT.Input[] inputs, int size);
@@ -568,10 +672,9 @@ namespace metin
         private void button1_Click(object sender, EventArgs e)
         {
             Button xd = button1;
-            
+
             if (xd.Text != "stop")
             {
-                Console.WriteLine("aha?");
 
                 if (buttonInitText == null)
                 {
@@ -590,7 +693,6 @@ namespace metin
             }
             else
             {
-                Console.WriteLine("e?");
                 xd.Text = buttonInitText;
                 timer1.Dispose();
             }
@@ -601,5 +703,11 @@ namespace metin
         {
 
         }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
+
